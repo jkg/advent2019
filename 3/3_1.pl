@@ -7,38 +7,31 @@ use Modern::Perl;
 
 use Wire;
 use Node;
+use Board;
 
 my $start = Node->new( x=>0, y=>0 );
 
-my $definition = <>;
-chomp;
-my $wire1 = Wire->new( definition => $definition );
+my $board = Board->new;
 
-
-say "wire 1 has " . scalar @{ $wire1->nodes };
-
-$definition = <>;
-chomp;
-my $wire2 = Wire->new( definition => $definition );
-
-say "wire 2 has " . scalar @{ $wire2->nodes };
+my $n = 0;
+while ( my $definition = <> ) {
+	$n++;
+	$board->add_wire( $definition, "wire$n" );
+}
 
 my $minimum_distance = undef;
 
-for my $node1 ( @{ $wire1->nodes } ) {
-	for my $node2 ( @{ $wire2->nodes } ) {
+my $minimum_distance = 999999999;
+for my $node1 ( @{ $board->wires->{wire1}->nodes } ) {
 
-		#		say "comparing " . join (" ", $node1->x, $node1->y, $node2->x, $node2->y );
-
-
-		if ( $node1->crosses($node2) ) {
-			say "found a cross at " . $node1->x . "," . $node1->y;
-			my $distance = $node1->distance_to( $start );
-			say "distance is $distance";
-			$minimum_distance = $distance 
-				unless defined $minimum_distance and $distance > $minimum_distance;
-		}
+	my $key = join "_", ( $node1->x, $node1->y );
+	#	say "checking $key";
+	if ( $board->dict->{$key}->{wire2} ) {
+		say "found a cross at $key";
+		my $distance = $node1->distance_to( $start );
+		$minimum_distance = $distance unless $distance >= $minimum_distance;
 	}
 }
 
-say "minimum distance is: $minimum_distance";
+say "minimum distance to a cross from 0,0 is $minimum_distance";
+
