@@ -24,7 +24,7 @@ sub distance_to {
 sub crosses {
 	my $self = shift;
 	my $other_node = shift;
-	return undef unless $other_node->isa('Node');
+	return undef unless defined $other_node and $other_node->isa('Node');
 
 	return 1 if ( $self->x == $other_node->x and $self->y == $other_node->y );
 	return 0;

@@ -15,6 +15,23 @@ has definition => (
 	required => 1,
 );
 
+sub distance_to {
+	my $self = shift;
+	my $destination = shift; # Node
+
+	die unless blessed $destination and $destination->isa('Node');
+
+	my $current_node = Node->new( 0,0 );
+	my @nodes = @{ $self->nodes };
+	my $counter = 0;
+
+	until ( $current_node->crosses( $destination ) ) {
+		$current_node = shift @nodes;
+		$counter++;
+	}
+
+	return $counter;
+}
 
 sub _create_route {
 	my $self = shift;
